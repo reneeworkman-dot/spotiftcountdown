@@ -4,369 +4,140 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>S4A Countdown Tracker</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,640&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #10110e;
-      --ink: #f4f0e6;
-      --muted: #9a9386;
-      --faint: #6d675c;
-      --line: rgba(244, 240, 230, 0.14);
-      --lime: #d6f25c;
-      --lime-dim: rgba(214, 242, 92, 0.16);
-      --coral: #ff6a45;
-      --coral-dim: rgba(255, 106, 69, 0.14);
-      --card: #191a15;
-      --shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
-      --sans: "Outfit", "Segoe UI", sans-serif;
-      --serif: "Fraunces", "Iowan Old Style", Georgia, serif;
+      --bg: #f6f5f2;
+      --ink: #1c1b17;
+      --muted: #5e5a52;
+      --line: #ddd9d0;
+      --accent: #1f4d38;
+      --soft: #fff;
     }
-
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      overflow-x: clip;
-      min-height: 100vh;
-      background:
-        radial-gradient(900px 420px at 0% -10%, rgba(214, 242, 92, 0.08), transparent 55%),
-        radial-gradient(720px 380px at 100% 0%, rgba(255, 106, 69, 0.07), transparent 50%),
-        var(--bg);
+      background: var(--bg);
       color: var(--ink);
-      font-family: var(--sans);
-      font-size: 16px;
-      line-height: 1.45;
+      font: 16px/1.45 system-ui, "Segoe UI", sans-serif;
     }
-    button, input, select { font: inherit; color: inherit; }
+    button, input { font: inherit; color: inherit; }
     button { cursor: pointer; }
-    :focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
-    .wrap { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .wrap { width: min(980px, calc(100% - 32px)); margin: 0 auto; }
+    header { padding: 28px 0 8px; }
     .kicker {
-      margin: 0 0 8px;
-      color: var(--lime);
+      margin: 0 0 6px;
+      color: var(--accent);
       font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.18em;
+      font-weight: 700;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
     }
-    h1, h2, .num { font-family: var(--serif); font-weight: 560; letter-spacing: -0.03em; }
-    h1 { margin: 0; font-size: clamp(42px, 6vw, 68px); line-height: 0.92; }
-    .lede { max-width: 46ch; margin: 14px 0 0; color: var(--muted); font-size: 16px; }
-
-    .mast {
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.75fr);
-      gap: 28px;
-      align-items: end;
-      padding: 36px 0 8px;
-    }
-    .hero-card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 22px 22px 18px;
-      box-shadow: var(--shadow);
-      min-height: 210px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .hero-card .label {
-      margin: 0;
-      color: var(--coral);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-    }
-    .hero-card.live .label { color: var(--lime); }
-    .hero-card .when {
-      margin: 8px 0 0;
-      font-family: var(--serif);
-      font-size: clamp(64px, 8vw, 92px);
-      line-height: 0.84;
-      letter-spacing: -0.045em;
-    }
-    .hero-card .when small {
-      display: block;
-      margin-top: 6px;
-      font-family: var(--sans);
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0;
-      color: var(--muted);
-    }
-    .hero-meta { display: flex; justify-content: space-between; gap: 16px; align-items: end; }
-    .hero-meta p { margin: 0; }
-    .hero-meta .count { color: var(--muted); font-size: 14px; }
-    .hero-meta .leader { font-weight: 600; }
-    .hero-meta .leader span { display: block; color: var(--muted); font-weight: 400; font-size: 14px; }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      margin: 28px 0 0;
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-    }
-    .stat { padding: 16px 18px 16px 0; }
-    .stat + .stat { padding-left: 18px; border-left: 1px solid var(--line); }
-    .stat b {
-      display: block;
-      font-family: var(--serif);
-      font-size: clamp(28px, 3vw, 40px);
-      font-weight: 560;
-      letter-spacing: -0.04em;
-      line-height: 1;
-      font-variant-numeric: tabular-nums;
-    }
-    .stat span { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; }
-    .stat em { font-style: normal; color: var(--faint); }
-
+    h1 { margin: 0; font-size: 32px; font-weight: 650; letter-spacing: -0.03em; }
+    .lede { margin: 8px 0 0; max-width: 68ch; color: var(--muted); }
     .toolbar {
       position: sticky;
       top: 0;
-      z-index: 5;
+      z-index: 2;
       display: flex;
-      flex-wrap: wrap;
       gap: 10px;
       align-items: center;
-      padding: 14px 0;
-      background: rgba(16, 17, 14, 0.9);
-      backdrop-filter: blur(14px);
+      padding: 12px 0;
+      background: var(--bg);
     }
     .search {
-      flex: 1 1 220px;
+      flex: 1;
       min-width: 0;
-      background: transparent;
+      background: var(--soft);
       border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 10px 16px;
+      border-radius: 8px;
+      padding: 10px 12px;
     }
-    .search::placeholder { color: var(--faint); }
-    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .chip, .sort, .refresh, .retry, .linkish {
-      border: 1px solid var(--line);
-      background: transparent;
-      border-radius: 999px;
-      padding: 8px 12px;
-      color: var(--muted);
-    }
-    .chip[aria-pressed="true"] {
+    .refresh {
       background: var(--ink);
-      color: #16160f;
-      border-color: var(--ink);
-      font-weight: 600;
+      color: #fff;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
     }
-    .sort { border-radius: 999px; padding-right: 10px; }
-    .refresh { margin-left: auto; color: var(--ink); }
-    .refresh[disabled] { opacity: 0.5; cursor: progress; }
-    .shown { color: var(--faint); font-size: 13px; font-variant-numeric: tabular-nums; }
-
-    .banner, .error, .empty, .loading {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 22px;
-      margin: 8px 0 28px;
-    }
-    .error, .banner { border-color: rgba(255, 106, 69, 0.45); background: var(--coral-dim); }
-    .error h2, .empty h2, .loading h2 { margin: 0 0 6px; font-size: 28px; }
-    .error p, .empty p, .loading p, .banner p { margin: 0; color: var(--ink); }
-    .retry, .linkish { display: inline-block; margin-top: 14px; color: var(--ink); text-decoration: none; }
-    .group { margin: 8px 0 22px; }
-    .group h2 {
+    .refresh[disabled] { opacity: 0.55; cursor: progress; }
+    .section { margin: 8px 0 28px; }
+    .section h2 {
       display: flex;
       justify-content: space-between;
       gap: 12px;
       align-items: baseline;
-      margin: 0;
-      padding: 18px 0 8px;
-      font-family: var(--sans);
+      margin: 0 0 8px;
       font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.14em;
+      font-weight: 700;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--muted);
     }
-    .group h2 b { color: var(--ink); font-weight: 600; letter-spacing: 0.08em; }
-    .row {
-      width: 100%;
-      max-width: 100%;
-      text-align: left;
+    .section h2 span { color: var(--muted); font-weight: 600; letter-spacing: 0; text-transform: none; }
+    table { width: 100%; border-collapse: collapse; background: var(--soft); }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: baseline; }
+    th { font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); font-weight: 700; white-space: nowrap; }
+    td:nth-child(3), td.num, th.num { white-space: nowrap; }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .empty, .error, .loading, .banner {
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      margin: 0 0 12px;
+    }
+    .error, .banner { border-color: #e4b4a8; }
+    .error p, .banner p, .empty p, .loading p { margin: 6px 0 0; }
+    .retry {
+      margin-top: 12px;
       background: transparent;
-      border: 0;
-      border-top: 1px solid var(--line);
-      padding: 16px 0;
-      display: grid;
-      grid-template-columns: 92px minmax(0, 1fr) auto;
-      gap: 8px 18px;
-      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 12px;
     }
-    .row:hover { background: rgba(255, 255, 255, 0.02); }
-    .day {
-      font-family: var(--serif);
-      font-size: 28px;
-      line-height: 0.9;
-      letter-spacing: -0.04em;
-    }
-    .day small {
-      display: block;
-      margin-top: 4px;
-      font-family: var(--sans);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--faint);
-    }
-    .is-today .day { color: var(--coral); }
-    .is-live .day { color: var(--lime); }
-    .who { min-width: 0; }
-    .artist { font-weight: 600; font-size: 18px; }
-    .release {
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 100%;
-    }
-    .dates { margin-top: 6px; color: #d4cdc0; font-size: 14px; overflow-wrap: anywhere; }
-    .total { text-align: right; font-variant-numeric: tabular-nums; }
-    .total b {
-      display: block;
-      font-family: var(--serif);
-      font-size: 28px;
-      font-weight: 560;
-      letter-spacing: -0.04em;
-      line-height: 1;
-    }
-    .total span {
-      color: var(--faint);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
-    .meter {
-      grid-column: 2 / -1;
-      min-width: 0;
-      display: grid;
-      grid-template-columns: repeat(15, minmax(0, 1fr));
-      gap: 3px;
-      height: 36px;
-      align-items: end;
-      overflow: hidden;
-    }
-    .meter i {
-      display: block;
-      min-width: 0;
-      height: var(--h);
-      min-height: 0;
-      border-radius: 2px 2px 0 0;
-      background: var(--lime);
-      opacity: 0.9;
-    }
-    .is-today .meter i { background: var(--coral); }
-    .meter i.empty { height: 3px; background: rgba(244, 240, 230, 0.12); opacity: 1; }
-    .panel {
-      border-top: 1px solid var(--line);
-      padding: 14px 0 18px 110px;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px 18px;
-    }
-    .panel .field span {
-      display: block;
-      color: var(--faint);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-    .panel .field b { font-weight: 560; font-variant-numeric: tabular-nums; }
-    .weeks { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
-    .week {
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 10px;
-      padding: 8px 10px;
-    }
-    .week span { display: block; color: var(--faint); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
-    .week b { font-variant-numeric: tabular-nums; }
-    .week.missing b { color: var(--faint); font-weight: 400; }
     footer {
       display: flex;
       justify-content: space-between;
-      gap: 16px;
+      gap: 12px;
       flex-wrap: wrap;
-      padding: 18px 0 42px;
-      color: var(--faint);
+      padding: 8px 0 36px;
+      color: var(--muted);
       font-size: 13px;
-      border-top: 1px solid var(--line);
     }
-    footer a { color: var(--muted); }
-    .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
-    @media (max-width: 800px) {
-      .wrap { width: min(100% - 28px, 1120px); }
-      .mast, .stats { grid-template-columns: 1fr; }
-      .stat + .stat { border-left: 0; padding-left: 0; border-top: 1px solid var(--line); }
-      .hero-card .when { font-size: 64px; }
-      .toolbar, .chips { min-width: 0; }
-      .row { grid-template-columns: 72px minmax(0, 1fr); }
-      .total { grid-column: 2; text-align: left; }
-      .meter { grid-column: 1 / -1; }
-      .panel { padding-left: 0; grid-template-columns: 1fr 1fr; }
-      .weeks { grid-template-columns: repeat(2, 1fr); }
-      .refresh { margin-left: 0; }
+    footer a { color: var(--accent); }
+    .sr {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
     }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
+    @media (max-width: 700px) {
+      .scroll { overflow-x: auto; }
+      table { min-width: 640px; }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <header class="mast">
-      <div>
-        <p class="kicker">S4A</p>
-        <h1>Countdown Tracker</h1>
-        <p class="lede">Live from the Daily Running S4A Countdown Tracker. Release Date is the day being counted down. Week 1–Week 15 and Total are new presaves.</p>
-      </div>
-      <section class="hero-card" id="hero" aria-live="polite">
-        <p class="label">Loading</p>
-        <p class="when">…<small>Reading the sheet</small></p>
-      </section>
+    <header>
+      <p class="kicker">S4A</p>
+      <h1>Countdown Tracker</h1>
+      <p class="lede">Live from Daily Running S4A Countdown Tracker. The list is releases whose Artist Name and Release Name are on the Warner Records release grid. Old is past Release Dates.</p>
     </header>
-
-    <section class="stats" id="stats" aria-label="Tracker totals"></section>
-
     <div class="toolbar">
       <label class="sr" for="q">Search artist or release</label>
       <input class="search" id="q" type="search" placeholder="Search artist or release" autocomplete="off">
-      <div class="chips" role="group" aria-label="Filter releases">
-        <button class="chip" type="button" data-filter="clock" aria-pressed="true">On the clock</button>
-        <button class="chip" type="button" data-filter="today">Release day</button>
-        <button class="chip" type="button" data-filter="undated">No date</button>
-        <button class="chip" type="button" data-filter="released">Released</button>
-        <button class="chip" type="button" data-filter="all">All</button>
-      </div>
-      <label class="sr" for="sort">Sort</label>
-      <select class="sort" id="sort">
-        <option value="soonest">Soonest</option>
-        <option value="latest">Latest release</option>
-        <option value="total">Highest Total</option>
-        <option value="artist">Artist</option>
-      </select>
-      <span class="shown" id="shown"></span>
       <button class="refresh" id="refresh" type="button">Refresh</button>
     </div>
-
     <p class="sr" id="live" aria-live="polite"></p>
     <div id="banner"></div>
     <main id="stage">
       <div class="loading">
-        <h2>Loading the tracker</h2>
+        <strong>Loading the tracker</strong>
         <p>Fetching Daily Running S4A Countdown Tracker.</p>
       </div>
     </main>
@@ -378,35 +149,48 @@
   <noscript>
     <p>This tracker needs JavaScript to load the Google Sheet.</p>
   </noscript>
-
   <script>
     const SHEET_ID = "1EPC0_zZqxSOaLFU2AYdLIFswK5CtH7h_APms0nGVZfw";
     const SHEET_NAME = "Daily Running S4A Countdown Tracker";
-    const REFRESH_MS = 5 * 60 * 1000;
+    const DAY_MS = 24 * 60 * 60 * 1000;
+
+    // Warner Records release grid: workbook "WR Release Tracker"
+    // (1gUB78RzBwKRLV9IUqO5mNh4kJOzQuahg4YgklMUCOpo), tab AUDIO, columns
+    // Artists and Title. That workbook is not public, so the page keeps the
+    // Artist Name + Release Name pairs from the countdown sheet that match it.
+    // Matching ignores case and punctuation. Presave numbers still load live.
+    const GRID_KEYS = new Set([
+      "royal blood\ndead company",
+      "teddy swims\nugly",
+      "hudson westbrook\nmade you look",
+      "randy travis\nsame old way",
+      "bassvictim\npeace war",
+      "amble\nlove and all its wares",
+      "cliff richard\nonly number ones",
+      "cruel santino\nk o t b the bomberman chronicles",
+      "the creekers\nfollow the sound",
+      "eve christina\nbig pain big change",
+      "clementine douglas\ntrust ep",
+      "brandy clark\nthe bird",
+      "new translations\nthe yearning",
+      "az chike\nno rest for the wicked",
+      "cassandra coleman\nend of your love"
+    ]);
 
     const state = {
       rows: [],
-      columns: [],
       loadedAt: null,
-      filter: "clock",
-      sort: "soonest",
       query: "",
-      open: new Set(),
-      loading: false,
-      error: null,
-      banner: ""
+      loading: false
     };
 
-    const heroEl = document.getElementById("hero");
-    const statsEl = document.getElementById("stats");
     const stageEl = document.getElementById("stage");
     const bannerEl = document.getElementById("banner");
-    const shownEl = document.getElementById("shown");
     const stampEl = document.getElementById("stamp");
     const liveEl = document.getElementById("live");
     const refreshBtn = document.getElementById("refresh");
     const qEl = document.getElementById("q");
-    const sortEl = document.getElementById("sort");
+    let dayTimer = 0;
 
     function esc(value) {
       return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
@@ -414,19 +198,20 @@
       }[ch]));
     }
 
+    function norm(value) {
+      return String(value ?? "")
+        .normalize("NFKD")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim()
+        .replace(/\s+/g, " ");
+    }
+
     function todayISO() {
       const now = new Date();
       const m = String(now.getMonth() + 1).padStart(2, "0");
       const d = String(now.getDate()).padStart(2, "0");
       return now.getFullYear() + "-" + m + "-" + d;
-    }
-
-    function dayDiff(fromISO, toISO) {
-      const a = fromISO.split("-").map(Number);
-      const b = toISO.split("-").map(Number);
-      const utcA = Date.UTC(a[0], a[1] - 1, a[2]);
-      const utcB = Date.UTC(b[0], b[1] - 1, b[2]);
-      return Math.round((utcB - utcA) / 86400000);
     }
 
     function fmtNum(value) {
@@ -442,19 +227,30 @@
       });
     }
 
-    function fmtDateShort(iso) {
-      if (!iso) return "—";
-      const [y, m, d] = iso.split("-").map(Number);
-      return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    }
-
     function fmtTime(date) {
-      return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+      return date.toLocaleString("en-US", {
+        month: "short", day: "numeric", hour: "numeric", minute: "2-digit"
+      });
     }
 
     function parseDate(cell) {
       if (!cell || cell.v == null || cell.v === "") return null;
-      if (typeof cell.f === "string" && /^\d{4}-\d{2}-\d{2}/.test(cell.f)) return cell.f.slice(0, 10);
+      if (typeof cell.f === "string") {
+        const iso = cell.f.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (iso) return iso[0];
+        const us = cell.f.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+        if (us) {
+          return us[3] + "-" + String(us[1]).padStart(2, "0") + "-" + String(us[2]).padStart(2, "0");
+        }
+      }
+      if (typeof cell.v === "string") {
+        const iso = cell.v.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (iso) return iso[0];
+        const us = cell.v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+        if (us) {
+          return us[3] + "-" + String(us[1]).padStart(2, "0") + "-" + String(us[2]).padStart(2, "0");
+        }
+      }
       const match = String(cell.v).match(/Date\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
       if (!match) return null;
       const y = Number(match[1]);
@@ -515,248 +311,91 @@
     }
 
     function parseTable(table) {
-      const cols = table.cols || [];
-      const labels = cols.map((col) => (col.label || "").trim());
+      const labels = (table.cols || []).map((col) => (col.label || "").trim());
       const index = (name) => labels.findIndex((label) => label === name);
       const artistI = index("Artist Name");
       const releaseI = index("Release Name");
-      const startI = index("Countdown Start");
-      const endI = index("Countdown End");
       const releaseDateI = index("Release Date");
       const totalI = index("Total");
-      if (artistI < 0 || releaseI < 0 || totalI < 0) {
-        throw new Error("The sheet loaded, but Artist Name, Release Name, and Total were not in it.");
+      if (artistI < 0 || releaseI < 0 || releaseDateI < 0 || totalI < 0) {
+        throw new Error("The sheet loaded, but Artist Name, Release Name, Release Date, and Total were not in it.");
       }
-      const weekCols = labels
-        .map((label, i) => ({ label, i, n: /^Week\s+(\d+)$/.exec(label) }))
-        .filter((col) => col.n)
-        .sort((a, b) => Number(a.n[1]) - Number(b.n[1]));
-
       const today = todayISO();
-      const rows = (table.rows || []).map((row) => {
+      return (table.rows || []).map((row) => {
         const cells = row.c || [];
         const artist = parseText(cells[artistI]);
         const release = parseText(cells[releaseI]);
         if (!artist && !release) return null;
-        const start = startI >= 0 ? parseDate(cells[startI]) : null;
-        const end = endI >= 0 ? parseDate(cells[endI]) : null;
-        const releaseDate = releaseDateI >= 0 ? parseDate(cells[releaseDateI]) : null;
+        const releaseDate = parseDate(cells[releaseDateI]);
         const total = parseNumber(cells[totalI]);
-        const weeks = weekCols.map((col) => ({
-          label: col.label,
-          value: parseNumber(cells[col.i])
-        }));
-        const target = releaseDate || end;
-        let status = "undated";
-        if (target) {
-          const days = dayDiff(today, target);
-          if (days > 0) status = start && dayDiff(today, start) > 0 ? "upcoming" : "live";
-          else if (days === 0) status = "today";
-          else status = "released";
-        }
+        const gridKey = norm(artist) + "\n" + norm(release);
         return {
-          artist, release, start, end, releaseDate, total, weeks, status, target,
-          key: [artist, release, start || "", end || "", releaseDate || ""].join("\u001f")
+          artist,
+          release,
+          releaseDate,
+          total,
+          onGrid: GRID_KEYS.has(gridKey),
+          past: Boolean(releaseDate && releaseDate < today)
         };
       }).filter(Boolean);
-
-      return { rows, weekCols };
     }
 
-    function matches(row) {
-      if (state.filter === "clock" && row.status !== "today" && row.status !== "live" && row.status !== "upcoming") return false;
-      if (state.filter === "today" && row.status !== "today") return false;
-      if (state.filter === "undated" && row.status !== "undated") return false;
-      if (state.filter === "released" && row.status !== "released") return false;
+    function matchesQuery(row) {
       if (!state.query) return true;
-      const hay = (row.artist + " " + row.release).toLowerCase();
-      return hay.includes(state.query);
+      return (row.artist + " " + row.release).toLowerCase().includes(state.query);
     }
 
-    function sorted(rows) {
-      const copy = rows.slice();
-      const sort = state.sort;
-      copy.sort((a, b) => {
-        if (sort === "total") return (b.total || 0) - (a.total || 0) || a.artist.localeCompare(b.artist);
-        if (sort === "artist") return a.artist.localeCompare(b.artist) || a.release.localeCompare(b.release);
-        const dir = sort === "latest" ? -1 : 1;
-        const at = a.target || (dir === 1 ? "9999-99-99" : "0000-00-00");
-        const bt = b.target || (dir === 1 ? "9999-99-99" : "0000-00-00");
-        if (at !== bt) return at < bt ? -dir : dir;
-        return (b.total || 0) - (a.total || 0);
-      });
-      return copy;
+    function byTotal(a, b) {
+      const at = a.total == null ? -1 : a.total;
+      const bt = b.total == null ? -1 : b.total;
+      if (bt !== at) return bt - at;
+      const ad = a.releaseDate || "9999-99-99";
+      const bd = b.releaseDate || "9999-99-99";
+      if (ad !== bd) return ad < bd ? -1 : 1;
+      return a.artist.localeCompare(b.artist) || a.release.localeCompare(b.release);
     }
 
-    function meterHTML(row) {
-      const values = row.weeks.map((week) => week.value);
-      const max = values.reduce((m, v) => (v != null && v > m ? v : m), 0);
-      return '<span class="meter" aria-hidden="true">' + row.weeks.map((week) => {
-        if (week.value == null) return '<i class="empty"></i>';
-        const pct = max > 0 ? Math.max(12, Math.round((week.value / max) * 100)) : 12;
-        const title = esc(week.label + ": " + fmtNum(week.value));
-        return '<i style="--h:' + pct + '%" title="' + title + '"></i>';
-      }).join("") + "</span>";
+    function tableHTML(rows) {
+      const body = rows.map((row) => (
+        "<tr><td>" + esc(row.artist) + "</td><td>" + esc(row.release) + "</td><td>" + esc(fmtDate(row.releaseDate)) + '</td><td class="num">' + esc(fmtNum(row.total)) + "</td></tr>"
+      )).join("");
+      return '<div class="scroll"><table><thead><tr><th>Artist Name</th><th>Release Name</th><th>Release Date</th><th class="num">Total</th></tr></thead><tbody>' + body + "</tbody></table></div>";
     }
 
-    function dayHTML(row) {
-      const today = todayISO();
-      if (row.status === "today") return '<div class="day">Today<small>Release</small></div>';
-      if (row.status === "undated") return '<div class="day">—<small>No date</small></div>';
-      if (!row.target) return '<div class="day">—<small></small></div>';
-      const days = dayDiff(today, row.target);
-      if (days > 0) {
-        return '<div class="day">' + days + "<small>" + (days === 1 ? "day" : "days") + "</small></div>";
-      }
-      return '<div class="day">' + esc(fmtDateShort(row.target)) + "<small>Released</small></div>";
+    function sectionHTML(title, rows, emptyText) {
+      const count = rows.length + (rows.length === 1 ? " release" : " releases");
+      let body;
+      if (!rows.length) body = '<p class="empty">' + esc(emptyText) + "</p>";
+      else body = tableHTML(rows);
+      return '<section class="section"><h2>' + esc(title) + "<span>" + esc(count) + "</span></h2>" + body + "</section>";
     }
 
-    function dateLine(row) {
-      const parts = [];
-      if (row.start) parts.push("Countdown Start " + fmtDate(row.start));
-      if (row.end) parts.push("Countdown End " + fmtDate(row.end));
-      if (row.releaseDate) parts.push("Release Date " + fmtDate(row.releaseDate));
-      if (!parts.length) parts.push("No Countdown End or Release Date");
-      return parts.join(" · ");
-    }
-
-    function detailHTML(row, panelId) {
-      const facts = [
-        ["Countdown Start", fmtDate(row.start)],
-        ["Countdown End", fmtDate(row.end)],
-        ["Release Date", fmtDate(row.releaseDate)],
-        ["Total", fmtNum(row.total)]
-      ];
-      const weeks = row.weeks.map((week) => {
-        const missing = week.value == null ? " missing" : "";
-        return '<div class="week' + missing + '"><span>' + esc(week.label) + "</span><b>" + fmtNum(week.value) + "</b></div>";
-      }).join("");
-      return '<div class="panel" id="' + panelId + '">'
-        + facts.map(([label, value]) => '<div class="field"><span>' + esc(label) + "</span><b>" + esc(value) + "</b></div>").join("")
-        + '<div class="weeks">' + weeks + "</div></div>";
-    }
-
-    function renderHero(rows) {
-      const active = rows.filter((row) => row.status === "today" || row.status === "live" || row.status === "upcoming");
-      if (!active.length) {
-        heroEl.className = "hero-card";
-        heroEl.innerHTML = '<p class="label">Countdown</p><p class="when">None<small>No release date is still ahead</small></p>';
-        return;
-      }
-      const nearest = active.reduce((min, row) => (row.target < min ? row.target : min), active[0].target);
-      const group = active.filter((row) => row.target === nearest);
-      const leader = group.slice().sort((a, b) => (b.total || 0) - (a.total || 0))[0];
-      const days = dayDiff(todayISO(), nearest);
-      const todayish = days === 0;
-      heroEl.className = "hero-card" + (todayish ? "" : " live");
-      const when = todayish
-        ? "Today"
-        : String(days);
-      const unit = todayish
-        ? fmtDate(nearest)
-        : (days === 1 ? "day until release" : "days until release");
-      const noun = group.length === 1 ? "release" : "releases";
-      heroEl.innerHTML = '<p class="label">' + (todayish ? "Release day" : "Next release") + "</p>"
-        + '<p class="when">' + esc(when) + "<small>" + esc(unit) + "</small></p>"
-        + '<div class="hero-meta"><p class="count">' + group.length + " " + noun + "</p>"
-        + '<p class="leader">' + esc(leader.artist) + "<span>" + esc(leader.release) + " · " + fmtNum(leader.total) + " Total</span></p></div>";
-    }
-
-    function renderStats(rows) {
-      const clock = rows.filter((row) => row.status === "today" || row.status === "live" || row.status === "upcoming");
-      const today = rows.filter((row) => row.status === "today").length;
-      const undated = rows.filter((row) => row.status === "undated").length;
-      const released = rows.filter((row) => row.status === "released").length;
-      const total = clock.reduce((sum, row) => sum + (row.total || 0), 0);
-      const items = [
-        [fmtNum(clock.length), "On the clock"],
-        [fmtNum(today), "Release day"],
-        [fmtNum(total), "Total <em>on the clock</em>"],
-        [fmtNum(released), "Released <em>" + fmtNum(undated) + " with no date</em>"]
-      ];
-      statsEl.innerHTML = items.map(([n, label]) => "<div class=\"stat\"><b>" + n + "</b><span>" + label + "</span></div>").join("");
-    }
-
-    function renderStage() {
-      const visible = sorted(state.rows.filter(matches));
-      shownEl.textContent = visible.length + (visible.length === 1 ? " release" : " releases");
-      if (!state.rows.length) {
-        stageEl.innerHTML = '<div class="empty"><h2>No releases in the sheet</h2><p>Daily Running S4A Countdown Tracker loaded, and it has no rows yet.</p></div>';
-        return;
-      }
-      if (!visible.length) {
-        const hint = state.query ? "Nothing matches “" + esc(state.query) + "”." : "Nothing in this view.";
-        stageEl.innerHTML = '<div class="empty"><h2>No releases</h2><p>' + hint + "</p></div>";
-        return;
-      }
-
-      const grouped = state.sort === "soonest" || state.sort === "latest";
-      let html = "";
-      let last = null;
-      visible.forEach((row, index) => {
-        const bucket = grouped ? (row.target || "undated") : "flat";
-        if (bucket !== last) {
-          if (last !== null) html += "</section>";
-          last = bucket;
-          if (grouped) {
-            const count = visible.filter((item) => (item.target || "undated") === bucket).length;
-            let title = "No Release Date";
-            let aside = count + (count === 1 ? " release" : " releases");
-            if (row.target) {
-              const days = dayDiff(todayISO(), row.target);
-              title = fmtDate(row.target);
-              aside = (days === 0 ? "Release day" : days > 0 ? days + (days === 1 ? " day" : " days") : "Released")
-                + " · " + count;
-            }
-            html += '<section class="group"><h2><b>' + esc(title) + "</b><span>" + esc(aside) + "</span></h2>";
-          } else {
-            html += '<section class="group">';
-          }
-        }
-        const panelId = "panel-" + index;
-        const open = state.open.has(row.key);
-        const cls = "row" + (row.status === "today" ? " is-today" : row.status === "live" || row.status === "upcoming" ? " is-live" : "");
-        html += '<article>'
-          + '<button class="' + cls + '" type="button" aria-expanded="' + open + '" aria-controls="' + panelId + '" data-key="' + esc(row.key) + '">'
-          + dayHTML(row)
-          + '<div class="who"><div class="artist">' + esc(row.artist) + '</div><div class="release">' + esc(row.release) + '</div><div class="dates">' + esc(dateLine(row)) + "</div></div>"
-          + '<div class="total"><b>' + fmtNum(row.total) + "</b><span>Total</span></div>"
-          + meterHTML(row)
-          + "</button>"
-          + (open ? detailHTML(row, panelId) : "")
-          + "</article>";
-      });
-      html += "</section>";
-      stageEl.innerHTML = html;
-    }
-
-    function renderBanner() {
-      bannerEl.innerHTML = state.banner
-        ? '<div class="banner"><p>' + esc(state.banner) + "</p></div>"
-        : "";
+    function render() {
+      const queried = state.rows.filter(matchesQuery);
+      const mainRows = queried.filter((row) => row.onGrid).sort(byTotal);
+      const oldRows = queried.filter((row) => row.past && !row.onGrid).sort(byTotal);
+      const mainEmpty = state.query ? "No release-grid rows match that search." : "No countdown rows match the Warner Records release grid.";
+      const oldEmpty = state.query ? "No past projects match that search." : "No past projects.";
+      stageEl.innerHTML = sectionHTML("Warner Records release grid", mainRows, mainEmpty)
+        + sectionHTML("Old", oldRows, oldEmpty);
+      stampEl.textContent = state.loadedAt
+        ? "Loaded " + fmtTime(state.loadedAt) + " · reloads once a day"
+        : "Waiting for the sheet.";
+      document.body.dataset.ready = "1";
     }
 
     function renderError(message) {
-      heroEl.className = "hero-card";
-      heroEl.innerHTML = '<p class="label">Sheet unavailable</p><p class="when">—<small>Could not load</small></p>';
-      statsEl.innerHTML = "";
-      shownEl.textContent = "";
-      stageEl.innerHTML = '<div class="error"><h2>The tracker did not load</h2><p>'
+      stageEl.innerHTML = '<div class="error"><strong>The tracker did not load</strong><p>'
         + esc(message)
         + '</p><button class="retry" type="button" id="retry">Try again</button></div>';
       const retry = document.getElementById("retry");
       if (retry) retry.addEventListener("click", () => refresh(true));
+      stampEl.textContent = "The sheet did not load.";
     }
 
-    function renderAll() {
-      renderBanner();
-      renderHero(state.rows);
-      renderStats(state.rows);
-      renderStage();
-      stampEl.textContent = state.loadedAt
-        ? "Loaded " + fmtTime(state.loadedAt) + " · refreshes every 5 minutes"
-        : "Waiting for the sheet.";
-      document.body.dataset.ready = "1";
+    function armDailyReload() {
+      clearTimeout(dayTimer);
+      dayTimer = setTimeout(() => refresh(false), DAY_MS);
     }
 
     async function refresh(manual) {
@@ -766,70 +405,38 @@
       refreshBtn.textContent = "Refreshing";
       try {
         const table = await loadSheet();
-        const parsed = parseTable(table);
-        state.rows = parsed.rows;
-        state.columns = parsed.weekCols;
+        state.rows = parseTable(table);
         state.loadedAt = new Date();
-        state.error = null;
-        state.banner = "";
-        renderAll();
-        liveEl.textContent = "Loaded " + state.rows.length + " releases.";
+        bannerEl.innerHTML = "";
+        render();
+        const gridCount = state.rows.filter((row) => row.onGrid).length;
+        liveEl.textContent = "Loaded " + state.rows.length + " rows. " + gridCount + " are on the release grid.";
       } catch (error) {
         const message = error && error.message ? error.message : "The sheet could not be loaded.";
-        state.error = message;
         if (!state.rows.length) renderError(message);
-        else {
-          state.banner = "Refresh failed. Showing the last load. " + message;
-          renderBanner();
-        }
+        else bannerEl.innerHTML = '<div class="banner"><p>Refresh failed. Showing the last load. ' + esc(message) + "</p></div>";
         liveEl.textContent = message;
       } finally {
         state.loading = false;
         refreshBtn.disabled = false;
         refreshBtn.textContent = "Refresh";
+        armDailyReload();
         if (manual) refreshBtn.focus();
       }
     }
 
-    document.querySelectorAll(".chip").forEach((chip) => {
-      chip.addEventListener("click", () => {
-        state.filter = chip.dataset.filter;
-        document.querySelectorAll(".chip").forEach((btn) => {
-          btn.setAttribute("aria-pressed", btn === chip ? "true" : "false");
-        });
-        if (state.rows.length) renderStage();
-      });
-    });
-
     qEl.addEventListener("input", () => {
       state.query = qEl.value.trim().toLowerCase();
-      if (state.rows.length) renderStage();
+      if (state.rows.length) render();
     });
-
-    sortEl.addEventListener("change", () => {
-      state.sort = sortEl.value;
-      if (state.rows.length) renderStage();
-    });
-
     refreshBtn.addEventListener("click", () => refresh(true));
-
-    stageEl.addEventListener("click", (event) => {
-      const button = event.target.closest(".row");
-      if (!button) return;
-      const key = button.dataset.key;
-      if (state.open.has(key)) state.open.delete(key);
-      else state.open.add(key);
-      renderStage();
-    });
-
     document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible" && state.loadedAt && Date.now() - state.loadedAt.getTime() > 60000) {
+      if (document.visibilityState === "visible" && state.loadedAt && Date.now() - state.loadedAt.getTime() >= DAY_MS) {
         refresh(false);
       }
     });
 
     refresh(false);
-    setInterval(() => refresh(false), REFRESH_MS);
   </script>
 </body>
 </html>
