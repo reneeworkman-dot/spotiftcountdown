@@ -126,7 +126,7 @@
     <header>
       <p class="kicker">S4A</p>
       <h1>Countdown Tracker</h1>
-      <p class="lede">Live from Daily Running S4A Countdown Tracker. The list is releases whose Artist Name and Release Name are on the Warner Records release grid. Old is past Release Dates.</p>
+      <p class="lede">Live from Daily Running S4A Countdown Tracker. The list is upcoming Warner Records release-grid rows, compared with your local date. A blank Release Date stays off that list. Old is past Release Dates.</p>
     </header>
     <div class="toolbar">
       <label class="sr" for="q">Search artist or release</label>
@@ -335,6 +335,7 @@
           releaseDate,
           total,
           onGrid: GRID_KEYS.has(gridKey),
+          upcoming: Boolean(releaseDate && releaseDate >= today),
           past: Boolean(releaseDate && releaseDate < today)
         };
       }).filter(Boolean);
@@ -372,9 +373,9 @@
 
     function render() {
       const queried = state.rows.filter(matchesQuery);
-      const mainRows = queried.filter((row) => row.onGrid).sort(byTotal);
-      const oldRows = queried.filter((row) => row.past && !row.onGrid).sort(byTotal);
-      const mainEmpty = state.query ? "No release-grid rows match that search." : "No countdown rows match the Warner Records release grid.";
+      const mainRows = queried.filter((row) => row.onGrid && row.upcoming).sort(byTotal);
+      const oldRows = queried.filter((row) => row.past).sort(byTotal);
+      const mainEmpty = state.query ? "No upcoming release-grid rows match that search." : "No upcoming releases on the Warner Records release grid.";
       const oldEmpty = state.query ? "No past projects match that search." : "No past projects.";
       stageEl.innerHTML = sectionHTML("Warner Records release grid", mainRows, mainEmpty)
         + sectionHTML("Old", oldRows, oldEmpty);
@@ -409,8 +410,8 @@
         state.loadedAt = new Date();
         bannerEl.innerHTML = "";
         render();
-        const gridCount = state.rows.filter((row) => row.onGrid).length;
-        liveEl.textContent = "Loaded " + state.rows.length + " rows. " + gridCount + " are on the release grid.";
+        const gridCount = state.rows.filter((row) => row.onGrid && row.upcoming).length;
+        liveEl.textContent = "Loaded " + state.rows.length + " rows. " + gridCount + " upcoming releases are on the release grid.";
       } catch (error) {
         const message = error && error.message ? error.message : "The sheet could not be loaded.";
         if (!state.rows.length) renderError(message);
