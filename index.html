@@ -126,7 +126,7 @@
     <header>
       <p class="kicker">S4A</p>
       <h1>Countdown Tracker</h1>
-      <p class="lede">Live from Daily Running S4A Countdown Tracker. The list is upcoming Warner Records release-grid rows, compared with your local date. A blank Release Date stays off that list. Old is past Release Dates.</p>
+      <p class="lede">Live from COMBINED TRACKER. A blank countdown Release Date is filled from the Warner Records release grid when the artist and release name match. The list is upcoming release-grid rows, compared with your local date. A row that still has no Release Date stays off that list. Old is past Release Dates.</p>
     </header>
     <div class="toolbar">
       <label class="sr" for="q">Search artist or release</label>
@@ -138,7 +138,7 @@
     <main id="stage">
       <div class="loading">
         <strong>Loading the tracker</strong>
-        <p>Fetching Daily Running S4A Countdown Tracker.</p>
+        <p>Fetching COMBINED TRACKER.</p>
       </div>
     </main>
     <footer>
@@ -151,31 +151,8 @@
   </noscript>
   <script>
     const SHEET_ID = "1EPC0_zZqxSOaLFU2AYdLIFswK5CtH7h_APms0nGVZfw";
-    const SHEET_NAME = "Daily Running S4A Countdown Tracker";
+    const SHEET_NAME = "COMBINED TRACKER";
     const DAY_MS = 24 * 60 * 60 * 1000;
-
-    // Warner Records release grid: workbook "WR Release Tracker"
-    // (1gUB78RzBwKRLV9IUqO5mNh4kJOzQuahg4YgklMUCOpo), tab AUDIO, columns
-    // Artists and Title. That workbook is not public, so the page keeps the
-    // Artist Name + Release Name pairs from the countdown sheet that match it.
-    // Matching ignores case and punctuation. Presave numbers still load live.
-    const GRID_KEYS = new Set([
-      "royal blood\ndead company",
-      "teddy swims\nugly",
-      "hudson westbrook\nmade you look",
-      "randy travis\nsame old way",
-      "bassvictim\npeace war",
-      "amble\nlove and all its wares",
-      "cliff richard\nonly number ones",
-      "cruel santino\nk o t b the bomberman chronicles",
-      "the creekers\nfollow the sound",
-      "eve christina\nbig pain big change",
-      "clementine douglas\ntrust ep",
-      "brandy clark\nthe bird",
-      "new translations\nthe yearning",
-      "az chike\nno rest for the wicked",
-      "cassandra coleman\nend of your love"
-    ]);
 
     const state = {
       rows: [],
@@ -196,15 +173,6 @@
       return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
       }[ch]));
-    }
-
-    function norm(value) {
-      return String(value ?? "")
-        .normalize("NFKD")
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, " ")
-        .trim()
-        .replace(/\s+/g, " ");
     }
 
     function todayISO() {
@@ -270,13 +238,20 @@
       return String(cell.v).trim();
     }
 
+    function parseFlag(cell) {
+      if (!cell || cell.v == null || cell.v === "") return false;
+      if (cell.v === true) return true;
+      const s = String(cell.v).trim().toLowerCase();
+      return s === "true" || s === "yes";
+    }
+
     function loadSheet() {
       const handler = "s4a_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
       return new Promise((resolve, reject) => {
         let settled = false;
         const script = document.createElement("script");
         const timer = setTimeout(() => finish(() => reject(new Error(
-          "The Daily Running S4A Countdown Tracker did not respond. The sheet has to be shared so anyone with the link can view it."
+          "COMBINED TRACKER did not respond. The sheet has to be shared so anyone with the link can view it."
         ))), 20000);
 
         function finish(fn) {
@@ -317,8 +292,9 @@
       const releaseI = index("Release Name");
       const releaseDateI = index("Release Date");
       const totalI = index("Total");
-      if (artistI < 0 || releaseI < 0 || releaseDateI < 0 || totalI < 0) {
-        throw new Error("The sheet loaded, but Artist Name, Release Name, Release Date, and Total were not in it.");
+      const gridI = index("On Release Grid");
+      if (artistI < 0 || releaseI < 0 || releaseDateI < 0 || totalI < 0 || gridI < 0) {
+        throw new Error("The sheet loaded, but Artist Name, Release Name, Release Date, Total, and On Release Grid were not in it.");
       }
       const today = todayISO();
       return (table.rows || []).map((row) => {
@@ -328,13 +304,12 @@
         if (!artist && !release) return null;
         const releaseDate = parseDate(cells[releaseDateI]);
         const total = parseNumber(cells[totalI]);
-        const gridKey = norm(artist) + "\n" + norm(release);
         return {
           artist,
           release,
           releaseDate,
           total,
-          onGrid: GRID_KEYS.has(gridKey),
+          onGrid: parseFlag(cells[gridI]),
           upcoming: Boolean(releaseDate && releaseDate >= today),
           past: Boolean(releaseDate && releaseDate < today)
         };
