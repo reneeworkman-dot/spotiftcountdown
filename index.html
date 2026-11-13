@@ -79,6 +79,39 @@
     th { font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); font-weight: 700; white-space: nowrap; }
     td:nth-child(3), td.num, th.num { white-space: nowrap; }
     td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .title {
+      background: transparent;
+      border: 0;
+      padding: 0;
+      color: var(--accent);
+      font: inherit;
+      text-align: left;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .title[aria-expanded="true"] { font-weight: 700; }
+    .detail td { background: #fbfaf7; }
+    .detail p { margin: 0; color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .week {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 8px 10px;
+    }
+    .week span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .week strong { font-variant-numeric: tabular-nums; }
     .empty, .error, .loading, .banner {
       background: var(--soft);
       border: 1px solid var(--line);
@@ -118,6 +151,7 @@
     @media (max-width: 700px) {
       .scroll { overflow-x: auto; }
       table { min-width: 640px; }
+      .week-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
   </style>
 </head>
@@ -126,7 +160,7 @@
     <header>
       <p class="kicker">S4A</p>
       <h1>Countdown Tracker</h1>
-      <p class="lede">Live from COMBINED TRACKER. A blank countdown Release Date is filled from the Warner Records release grid when the artist and release name match. The list is upcoming release-grid rows, compared with your local date. A row that still has no Release Date stays off that list. Old is past Release Dates.</p>
+      <p class="lede">Live from COMBINED TRACKER. A blank countdown Release Date is filled from the Warner Records release grid when the artist and release name match. The list is upcoming release-grid rows, compared with your local date. A row that still has no Release Date stays off that list. Old is past Release Dates. Click a release name to see new presaves for Week 1 through Week 15.</p>
     </header>
     <div class="toolbar">
       <label class="sr" for="q">Search artist or release</label>
@@ -158,7 +192,8 @@
       rows: [],
       loadedAt: null,
       query: "",
-      loading: false
+      loading: false,
+      openId: null
     };
 
     const stageEl = document.getElementById("stage");
@@ -293,6 +328,12 @@
       const releaseDateI = index("Release Date");
       const totalI = index("Total");
       const gridI = index("On Release Grid");
+      const weekI = [];
+      for (let n = 1; n <= 15; n++) {
+        const i = index("Week " + n);
+        if (i < 0) throw new Error("The sheet loaded, but Week " + n + " was not in it.");
+        weekI.push(i);
+      }
       if (artistI < 0 || releaseI < 0 || releaseDateI < 0 || totalI < 0 || gridI < 0) {
         throw new Error("The sheet loaded, but Artist Name, Release Name, Release Date, Total, and On Release Grid were not in it.");
       }
@@ -309,11 +350,15 @@
           release,
           releaseDate,
           total,
+          weeks: weekI.map((i) => parseNumber(cells[i])),
           onGrid: parseFlag(cells[gridI]),
           upcoming: Boolean(releaseDate && releaseDate >= today),
           past: Boolean(releaseDate && releaseDate < today)
         };
-      }).filter(Boolean);
+      }).filter(Boolean).map((row, i) => {
+        row.id = String(i);
+        return row;
+      });
     }
 
     function matchesQuery(row) {
@@ -331,10 +376,20 @@
       return a.artist.localeCompare(b.artist) || a.release.localeCompare(b.release);
     }
 
-    function tableHTML(rows) {
-      const body = rows.map((row) => (
-        "<tr><td>" + esc(row.artist) + "</td><td>" + esc(row.release) + "</td><td>" + esc(fmtDate(row.releaseDate)) + '</td><td class="num">' + esc(fmtNum(row.total)) + "</td></tr>"
+    function weeksHTML(row) {
+      const cells = row.weeks.map((value, i) => (
+        '<div class="week"><span>Week ' + (i + 1) + "</span><strong>" + esc(fmtNum(value)) + "</strong></div>"
       )).join("");
+      return '<tr class="detail"><td colspan="4"><div id="weeks-' + esc(row.id) + '"><p>New presaves</p><div class="week-grid">' + cells + "</div></div></td></tr>";
+    }
+
+    function tableHTML(rows) {
+      const body = rows.map((row) => {
+        const open = state.openId === row.id;
+        const title = '<button class="title" type="button" data-open="' + esc(row.id) + '" aria-expanded="' + (open ? "true" : "false") + '" aria-controls="weeks-' + esc(row.id) + '">' + esc(row.release) + "</button>";
+        const main = "<tr><td>" + esc(row.artist) + "</td><td>" + title + "</td><td>" + esc(fmtDate(row.releaseDate)) + '</td><td class="num">' + esc(fmtNum(row.total)) + "</td></tr>";
+        return open ? main + weeksHTML(row) : main;
+      }).join("");
       return '<div class="scroll"><table><thead><tr><th>Artist Name</th><th>Release Name</th><th>Release Date</th><th class="num">Total</th></tr></thead><tbody>' + body + "</tbody></table></div>";
     }
 
@@ -401,6 +456,15 @@
       }
     }
 
+    stageEl.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-open]");
+      if (!button) return;
+      const id = button.getAttribute("data-open");
+      state.openId = state.openId === id ? null : id;
+      render();
+      const again = stageEl.querySelector('[data-open="' + id + '"]');
+      if (again) again.focus();
+    });
     qEl.addEventListener("input", () => {
       state.query = qEl.value.trim().toLowerCase();
       if (state.rows.length) render();
