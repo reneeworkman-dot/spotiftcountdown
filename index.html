@@ -111,7 +111,21 @@
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
-    .week strong { font-variant-numeric: tabular-nums; }
+    .week strong {
+      display: block;
+      font-variant-numeric: tabular-nums;
+    }
+    .week .added { color: var(--accent); }
+    .week .running { font-weight: 650; }
+    .week .running em {
+      margin-right: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      font-style: normal;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
     .empty, .error, .loading, .banner {
       background: var(--soft);
       border: 1px solid var(--line);
@@ -160,7 +174,7 @@
     <header>
       <p class="kicker">S4A</p>
       <h1>Countdown Tracker</h1>
-      <p class="lede">Live from COMBINED TRACKER. A blank countdown Release Date is filled from the Warner Records release grid when the artist and release name match. The list is upcoming release-grid rows, compared with your local date. A row that still has no Release Date stays off that list. Old is past Release Dates. Click a release name to see new presaves for Week 1 through Week 15.</p>
+      <p class="lede">Live from COMBINED TRACKER. A blank countdown Release Date is filled from the Warner Records release grid when the artist and release name match. The list is upcoming release-grid rows, compared with your local date. A row that still has no Release Date stays off that list. Old is past Release Dates. Click a release name to see Week 1 through Week 15: the amount added that week and the running total.</p>
     </header>
     <div class="toolbar">
       <label class="sr" for="q">Search artist or release</label>
@@ -376,11 +390,22 @@
       return a.artist.localeCompare(b.artist) || a.release.localeCompare(b.release);
     }
 
+    function fmtAdded(value) {
+      const text = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(value);
+      return value > 0 ? "+" + text : text;
+    }
+
     function weeksHTML(row) {
-      const cells = row.weeks.map((value, i) => (
-        '<div class="week"><span>Week ' + (i + 1) + "</span><strong>" + esc(fmtNum(value)) + "</strong></div>"
-      )).join("");
-      return '<tr class="detail"><td colspan="4"><div id="weeks-' + esc(row.id) + '"><p>New presaves</p><div class="week-grid">' + cells + "</div></div></td></tr>";
+      let running = 0;
+      const cells = row.weeks.map((value, i) => {
+        const label = "<span>Week " + (i + 1) + "</span>";
+        if (value == null) return '<div class="week">' + label + "</div>";
+        running += value;
+        return '<div class="week">' + label
+          + '<strong class="added">' + esc(fmtAdded(value)) + "</strong>"
+          + '<strong class="running"><em>Running</em>' + esc(fmtNum(running)) + "</strong></div>";
+      }).join("");
+      return '<tr class="detail"><td colspan="4"><div id="weeks-' + esc(row.id) + '"><p>Added that week, then the running total</p><div class="week-grid">' + cells + "</div></div></td></tr>";
     }
 
     function tableHTML(rows) {
