@@ -92,6 +92,13 @@
     .title[aria-expanded="true"] { font-weight: 700; }
     .detail td { background: #fbfaf7; }
     .detail p { margin: 0; color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .week-note {
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0;
+      text-transform: none;
+    }
     .week-grid {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -397,15 +404,23 @@
 
     function weeksHTML(row) {
       let running = 0;
+      let filled = 0;
       const cells = row.weeks.map((value, i) => {
         const label = "<span>Week " + (i + 1) + "</span>";
         if (value == null) return '<div class="week">' + label + "</div>";
+        filled += 1;
         running += value;
         return '<div class="week">' + label
           + '<strong class="added">' + esc(fmtAdded(value)) + "</strong>"
-          + '<strong class="running"><em>Running</em>' + esc(fmtNum(running)) + "</strong></div>";
+          + '<strong class="running"><em>Running</em> ' + esc(fmtNum(running)) + "</strong></div>";
       }).join("");
-      return '<tr class="detail"><td colspan="4"><div id="weeks-' + esc(row.id) + '"><p>Added that week, then the running total</p><div class="week-grid">' + cells + "</div></div></td></tr>";
+      let note = "";
+      if (filled && row.total != null && Math.round(running) !== Math.round(row.total)) {
+        note = '<p class="week-note">These weeks add up to ' + esc(fmtNum(running))
+          + ". The sheet Total is " + esc(fmtNum(row.total))
+          + ", which includes presaves that are not in Week 1 through Week 15.</p>";
+      }
+      return '<tr class="detail"><td colspan="4"><div id="weeks-' + esc(row.id) + '"><p>Added that week, then the running total</p><div class="week-grid">' + cells + "</div>" + note + "</div></td></tr>";
     }
 
     function tableHTML(rows) {
